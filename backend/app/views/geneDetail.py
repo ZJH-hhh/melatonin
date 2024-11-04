@@ -12,26 +12,31 @@ class GeneDetailView(APIView):
 
             gene_detail = Alldata.objects.filter(database_id=database_id).values('database_id', 'ncbi_gene_id', 'source', 'symbol', 'gene_type', 'aliases', 'map_location', 
                                                                           'org_name', 'tax_id', 'taxonomic_lineage', 'gene_summary').first()
-            gene_detail['org_name'] = re.sub(r'\(.*?\)', '', gene_detail['org_name']).strip()
-
+            if gene_detail:
+                gene_detail['org_name'] = re.sub(r'\(.*?\)', '', gene_detail['org_name']).strip()
 
             protein_detail = Alldata.objects.filter(database_id=database_id).values('transcript_protein_name', 'uniprot_id', 'pdb', 'prosite', 'interpro', 'pfam_id',
                                                                                                  'panther', 'cdd', 'protein_function', 'string').first()
             
 
-            orthology_data = Alldata.objects.filter(database_id=database_id).values_list('orthology', flat=True).first().split('|')
+            orthology_data = Alldata.objects.filter(database_id=database_id).values_list('orthology', flat=True).first()
             orthology = []
-            for other_id in orthology_data:
-                item = Alldata.objects.filter(database_id=other_id).values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').first()
-                item['org_name'] = re.sub(r'\(.*?\)', '', item['org_name']).strip()
-                orthology.append(item)
+            if orthology_data:
+                orthology_data = orthology_data.split('|')
+                for other_id in orthology_data:
+                    item = Alldata.objects.filter(database_id=other_id).values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').first()
+                    item['org_name'] = re.sub(r'\(.*?\)', '', item['org_name']).strip()
+                    orthology.append(item)
 
+            pathways = Alldata.objects.filter(database_id=database_id).values_list('kegg_pathway', flat=True).first()
+            if pathways:
+                pathways = pathways.split(',')
 
-            pathways = Alldata.objects.filter(database_id=database_id).values_list('kegg_pathway', flat=True).first().split(',')
             headers = settings.ROOT_URL + settings.MEDIA_URL + 'image/kegg_image/'
             pathway_img = []
-            for item in pathways:
-                pathway_img.append(headers + item + '.png')
+            if pathways:
+                for item in pathways:
+                    pathway_img.append(headers + item + '.png')
 
             external_links = Alldata.objects.filter(database_id=database_id).values('kegg_id', 'kegg_pathway', 'ensembl_geneids', 'cellular_component', 'biological_process', 'molecular_function').first()
             if external_links:

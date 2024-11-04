@@ -10,9 +10,9 @@ from django.db import models
 
 class Alldata(models.Model):
     database_id = models.CharField(db_column='Database_ID', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    data_id = models.IntegerField(db_column='ID', blank=True, null=True)  # Field name made lowercase.
+    gene_id = models.CharField(db_column='ID', max_length=255, blank=True, null=True)  # Field name made lowercase.
     gene_type = models.CharField(db_column='Gene_Type', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    tax_id = models.IntegerField(blank=True, null=True)
+    tax_id = models.CharField(max_length=255, blank=True, null=True)
     gene_summary = models.TextField(db_column='Gene_summary', blank=True, null=True)  # Field name made lowercase.
     map_location = models.CharField(db_column='Map_Location', max_length=255, blank=True, null=True)  # Field name made lowercase.
     org_name = models.CharField(db_column='Org_name', max_length=255, blank=True, null=True)  # Field name made lowercase.
@@ -20,10 +20,10 @@ class Alldata(models.Model):
     taxonomic_lineage = models.TextField(db_column='Taxonomic_lineage', blank=True, null=True)  # Field name made lowercase.
     symbol = models.TextField(db_column='Symbol', blank=True, null=True)  # Field name made lowercase.
     aliases = models.TextField(db_column='Aliases', blank=True, null=True)  # Field name made lowercase.
-    all_gene_name = models.TextField(db_column='All_gene\x1f_name', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    all_gene_name = models.TextField(db_column='All_gene_name', blank=True, null=True)  # Field name made lowercase.
     transcript_protein_name = models.CharField(db_column='Transcript_Protein_Name', max_length=255, blank=True, null=True)  # Field name made lowercase.
     ensembl_geneids = models.CharField(db_column='Ensembl_GeneIDs', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    ncbi_gene_id = models.IntegerField(db_column='NCBI_gene_ID', blank=True, null=True)  # Field name made lowercase.
+    ncbi_gene_id = models.CharField(db_column='NCBI_gene_ID', max_length=255, blank=True, null=True)  # Field name made lowercase.
     uniprot_id = models.CharField(db_column='Uniprot_ID', max_length=255, blank=True, null=True)  # Field name made lowercase.
     kegg_id = models.CharField(db_column='KEGG_ID', max_length=255, blank=True, null=True)  # Field name made lowercase.
     kegg_pathway = models.TextField(db_column='KEGG_pathway', blank=True, null=True)  # Field name made lowercase.
