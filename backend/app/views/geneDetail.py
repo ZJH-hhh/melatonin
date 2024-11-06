@@ -22,8 +22,16 @@ class GeneDetailView(APIView):
                 gene_detail['org_name'] = re.sub(r'\(.*?\)', '', gene_detail['org_name']).strip()
 
             protein_detail = Alldata.objects.filter(database_id=database_id).values('transcript_protein_name', 'uniprot_id', 'pdb', 'prosite', 'interpro', 'pfam_id',
-                                                                                                 'panther', 'cdd', 'protein_function', 'string').first()
+                                                                                                 'panther', 'cdd', 'protein_function').first()
             
+            string_val = Alldata.objects.filter(database_id=database_id).values_list('string', flat=True).first().strip()
+            string_file_path = os.path.join(file_headers, 'image/string_image/', f'{string_val}.png')
+            print(string_file_path)
+            if os.path.exists(string_file_path):
+                string_img = os.path.join(url_headers, 'image/string_image/', f'{string_val}.png')
+            else:
+                string_img = ""
+
 
             orthology_data = Alldata.objects.filter(database_id=database_id).values_list('orthology', flat=True).first()
             orthology = []
@@ -115,6 +123,7 @@ class GeneDetailView(APIView):
                     'orthology': orthology,
                     'gene_expression_data': gene_expression_data,
                     'pathways': pathway_img,
+                    'string_img': string_img,
                     'external_links': external_links,
                 }
             })
