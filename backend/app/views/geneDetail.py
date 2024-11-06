@@ -53,14 +53,21 @@ class GeneDetailView(APIView):
 
 
             structure = Alldata.objects.filter(database_id=database_id).values('alphafolddb', 'pdb').first()
-            alpha_pdb = structure.get('alphafolddb')
-            alpha_pdb_file_url = os.path.join(url_headers, 'structure&seq/structure/Alphafold_PDB/', f'{alpha_pdb}.pdb')
+            alpha_pdbs = structure.get('alphafolddb').split(',')
+            alpha_pdb_file_urls = []
+            for item in alpha_pdbs:
+                file_path = os.path.join(file_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
+                if os.path.exists(file_path):
+                    file_url = os.path.join(url_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
+                    alpha_pdb_file_urls.append(file_url)
+            
             pdbs = structure.get('pdb').split(',')
             pdbs_file_url = []
-            for pdb in pdbs:
-                pdb_file_url = os.path.join(url_headers, 'structure&seq/structure/PDB/', f'{pdb}.pdb')
-                if os.path.exists(pdb_file_url):
-                    pdbs_file_url.append(pdb_file_url)
+            for item in pdbs:
+                file_path = os.path.join(file_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
+                if os.path.exists(file_path):
+                    file_url = os.path.join(url_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
+                    pdbs_file_url.append(file_url)
 
 
             sequence = []
@@ -103,7 +110,7 @@ class GeneDetailView(APIView):
                     'gene_detail': gene_detail,
                     'protein_detail': protein_detail,
                     'sequence': sequence,
-                    'alphafold_url': alpha_pdb_file_url,
+                    'alphafold_url': alpha_pdb_file_urls,
                     'pdb_url': pdbs_file_url,
                     'orthology': orthology,
                     'gene_expression_data': gene_expression_data,
