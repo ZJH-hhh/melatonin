@@ -2,12 +2,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from app.models import Alldata
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 import re
+import os
+import csv
 
 
 class GeneDetailView(APIView):
     def get(self, request):
         try:
+            file_headers = settings.MEDIA_ROOT
+            url_headers = settings.ROOT_URL + settings.MEDIA_URL
+
             database_id = request.GET.get('magdb_id')
 
             gene_detail = Alldata.objects.filter(database_id=database_id).values('database_id', 'ncbi_gene_id', 'source', 'symbol', 'gene_type', 'aliases', 'map_location', 
@@ -28,15 +34,62 @@ class GeneDetailView(APIView):
                     item['org_name'] = re.sub(r'\(.*?\)', '', item['org_name']).strip()
                     orthology.append(item)
 
+
+            gene_id = Alldata.objects.filter(database_id=database_id).values_list('gene_id', flat=True).first()
+            file_path = os.path.join(file_headers, 'structure&seq/Gene_expression/', f'{gene_id}.txt')
+            gene_expression_data = {}
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    reader = csv.reader(f, delimiter='\t')  # 假设用制表符分隔
+                    for _ in range(3):
+                        next(f)
+
+                    table_headers = next(reader)  # 获取表头（第三行）
+
+                    for row in reader:
+                        if len(row) == len(table_headers):  # 确保数据行与表头匹配
+                            gene_expression_data = {table_headers[i]: row[i] for i in range(len(table_headers))}
+            gene_expression_data = {key: value for key, value in gene_expression_data.items() if key and value}
+
+
+            structure = Alldata.objects.filter(database_id=database_id).values('alphafolddb', 'pdb').first()
+            alpha_pdb = structure.get('alphafolddb')
+            alpha_pdb_file_url = os.path.join(url_headers, 'structure&seq/structure/Alphafold_PDB/', f'{alpha_pdb}.pdb')
+            pdbs = structure.get('pdb').split(',')
+            pdbs_file_url = []
+            for pdb in pdbs:
+                pdb_file_url = os.path.join(url_headers, 'structure&seq/structure/PDB/', f'{pdb}.pdb')
+                if os.path.exists(pdb_file_url):
+                    pdbs_file_url.append(pdb_file_url)
+
+
+            sequence = []
+            gene_seq_path = os.path.join(file_headers, 'structure&seq/sequence/gene_sequence_all.fasta')
+            if os.path.exists(gene_seq_path):
+                with open(gene_seq_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        if line.startswith('>') and gene_id == line[1:].strip():
+                            sequence.append({'gene_seq': next(f).strip()})
+                            break
+
+            protein_seg_path = os.path.join(file_headers, 'structure&seq/sequence/protein_sequence_all.fasta')
+            if os.path.exists(protein_seg_path):
+                with open(gene_seq_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        if line.startswith('>') and gene_id == line[1:].strip():
+                            sequence.append({'protein_seg_path': next(f).strip()})
+                            break
+                            
+            
+
             pathways = Alldata.objects.filter(database_id=database_id).values_list('kegg_pathway', flat=True).first()
             if pathways:
                 pathways = pathways.split(',')
 
-            headers = settings.ROOT_URL + settings.MEDIA_URL + 'image/kegg_image/'
             pathway_img = []
             if pathways:
                 for item in pathways:
-                    pathway_img.append(headers + item + '.png')
+                    pathway_img.append(url_headers + 'image/kegg_image/' + item + '.png')
 
             external_links = Alldata.objects.filter(database_id=database_id).values('kegg_id', 'kegg_pathway', 'ensembl_geneids', 'cellular_component', 'biological_process', 'molecular_function').first()
             if external_links:
@@ -49,7 +102,11 @@ class GeneDetailView(APIView):
                 'response': {
                     'gene_detail': gene_detail,
                     'protein_detail': protein_detail,
+                    'sequence': sequence,
+                    'alphafold_url': alpha_pdb_file_url,
+                    'pdb_url': pdbs_file_url,
                     'orthology': orthology,
+                    'gene_expression_data': gene_expression_data,
                     'pathways': pathway_img,
                     'external_links': external_links,
                 }
