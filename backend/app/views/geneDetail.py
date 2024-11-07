@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from app.models import Alldata
+from app.models.Alldata import Alldata
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 import re
@@ -26,7 +26,6 @@ class GeneDetailView(APIView):
             
             string_val = Alldata.objects.filter(database_id=database_id).values_list('string', flat=True).first().strip()
             string_file_path = os.path.join(file_headers, 'image/string_image/', f'{string_val}.png')
-            print(string_file_path)
             if os.path.exists(string_file_path):
                 string_img = os.path.join(url_headers, 'image/string_image/', f'{string_val}.png')
             else:
@@ -94,8 +93,7 @@ class GeneDetailView(APIView):
                         if line.startswith('>') and gene_id == line[1:].strip():
                             sequence.append({'protein_seg_path': next(f).strip()})
                             break
-                            
-            
+                                        
 
             pathways = Alldata.objects.filter(database_id=database_id).values_list('kegg_pathway', flat=True).first()
             if pathways:

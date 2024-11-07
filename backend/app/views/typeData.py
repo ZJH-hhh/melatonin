@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from app.models import Alldata
+from app.models.Alldata import Alldata
 from django.core.paginator import Paginator
 from django.conf import settings
 import re
@@ -14,7 +14,7 @@ class TypeDataView(APIView):
 
             # print(request.GET)
 
-            typedata = Alldata.objects.filter(taxonomic_groups=type).values('database_id', 'org_name', 'tax_id')
+            typedata = Alldata.objects.filter(taxonomic_groups=type).values('database_id', 'org_name', 'tax_id').order_by('database_id')
         
             headers = settings.ROOT_URL + settings.MEDIA_URL + 'image/species/'
             unique_data = {}
