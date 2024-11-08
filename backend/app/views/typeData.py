@@ -33,7 +33,7 @@ class TypeDataView(APIView):
 
             return Response({
                 'result': 'success',
-                'total': len(unique_data),
+                'total': paginator.count,
                 'data': data
             })
         except Exception as e:

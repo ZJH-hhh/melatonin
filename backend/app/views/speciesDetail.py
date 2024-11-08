@@ -8,11 +8,23 @@ class SpeciesDetailView(APIView):
     def get(self, request):
         try:
             tax_id = request.GET.get('tax_id')
+            pathway = request.GET.get('pathway')
+            animal_growth = request.GET.get('animal_growth')
+            plant_growth = request.GET.get('plant_growth')
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
 
-            data = Alldata.objects.filter(tax_id=tax_id).values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
-
+            if tax_id:
+                queryset = Alldata.objects.filter(tax_id=tax_id)
+            elif pathway:
+                queryset = Alldata.objects.filter(pathway=pathway)
+            elif animal_growth:
+                queryset = Alldata.objects.filter(animal_growth=animal_growth)
+            elif plant_growth:
+                queryset = Alldata.objects.filter(plant_growth=plant_growth)
+                
+            data = queryset.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
+            
             paginator = Paginator(data, pagesize)
 
             current_page = paginator.page(page)
@@ -23,7 +35,7 @@ class SpeciesDetailView(APIView):
 
             return Response({
                 'result': 'success',
-                'total': len(data),
+                'total': paginator.count,
                 'data': res
             })
         except Exception as e:
