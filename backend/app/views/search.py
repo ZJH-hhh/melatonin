@@ -32,6 +32,8 @@ class SearchView(APIView):
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
 
+            print(search_type1, search_type2)
+
             key1 = self.field_mapping.get(search_type1)
             key2 = self.field_mapping.get(search_type2)
 

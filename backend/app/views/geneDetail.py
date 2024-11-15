@@ -18,19 +18,25 @@ class GeneDetailView(APIView):
 
             gene_detail = Alldata.objects.filter(database_id=database_id).values('database_id', 'ncbi_gene_id', 'source', 'symbol', 'gene_type', 'aliases', 'map_location', 
                                                                           'org_name', 'tax_id', 'taxonomic_lineage', 'gene_summary').first()
+            
             if gene_detail:
                 gene_detail['org_name'] = re.sub(r'\(.*?\)', '', gene_detail['org_name']).strip()
 
             protein_detail = Alldata.objects.filter(database_id=database_id).values('transcript_protein_name', 'uniprot_id', 'pdb', 'prosite', 'interpro', 'pfam_id',
                                                                                                  'panther', 'cdd', 'protein_function').first()
             
-            string_val = Alldata.objects.filter(database_id=database_id).values_list('string', flat=True).first().strip()
-            string_file_path = os.path.join(file_headers, 'image/string_image/', f'{string_val}.png')
+            
+            string_val = Alldata.objects.filter(database_id=database_id).values_list('string', flat=True).first()
+            if string_val:
+                string_val = string_val.strip()
+                string_file_path = os.path.join(file_headers, 'image/string_image/', f'{string_val}.png')
+            else:
+                string_file_path = ''
+
             if os.path.exists(string_file_path):
                 string_img = os.path.join(url_headers, 'image/string_image/', f'{string_val}.png')
             else:
                 string_img = ""
-
 
             orthology_data = Alldata.objects.filter(database_id=database_id).values_list('orthology', flat=True).first()
             orthology = []
@@ -38,7 +44,7 @@ class GeneDetailView(APIView):
                 orthology_data = orthology_data.split('|')
                 for other_id in orthology_data:
                     item = Alldata.objects.filter(database_id=other_id).values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').first()
-                    item['org_name'] = re.sub(r'\(.*?\)', '', item['org_name']).strip()
+                    item['org_name'] = re.sub(r'\(.*?\)', '', item['org_name']).strip() if item['org_name'] else ''
                     orthology.append(item)
 
 
@@ -60,21 +66,27 @@ class GeneDetailView(APIView):
 
 
             structure = Alldata.objects.filter(database_id=database_id).values('alphafolddb', 'pdb').first()
-            alpha_pdbs = structure.get('alphafolddb').split(',')
+            alpha_pdbs = structure.get('alphafolddb')
+            if alpha_pdbs:
+                alpha_pdbs = alpha_pdbs.split(',')
             alpha_pdb_file_urls = []
-            for item in alpha_pdbs:
-                file_path = os.path.join(file_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
-                if os.path.exists(file_path):
-                    file_url = os.path.join(url_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
-                    alpha_pdb_file_urls.append(file_url)
+            if alpha_pdbs:
+                for item in alpha_pdbs:
+                    file_path = os.path.join(file_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
+                    if os.path.exists(file_path):
+                        file_url = os.path.join(url_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
+                        alpha_pdb_file_urls.append(file_url)
             
-            pdbs = structure.get('pdb').split(',')
+            pdbs = structure.get('pdb')
+            if pdbs:
+                pdbs = pdbs.split(',')
             pdbs_file_url = []
-            for item in pdbs:
-                file_path = os.path.join(file_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
-                if os.path.exists(file_path):
-                    file_url = os.path.join(url_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
-                    pdbs_file_url.append(file_url)
+            if pdbs:
+                for item in pdbs:
+                    file_path = os.path.join(file_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
+                    if os.path.exists(file_path):
+                        file_url = os.path.join(url_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
+                        pdbs_file_url.append(file_url)
 
 
             sequence = []
