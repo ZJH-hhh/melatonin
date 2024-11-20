@@ -10,6 +10,7 @@ from app.views.pathway_imgs import PathwayView
 from app.views.disease import DiseaseView
 from app.views.stress import StressView
 from app.views.suggestion import SuggestionView
+from app.views.newdata import NewdataView
 
 urlpatterns = [
     path('test/', TestView.as_view()),
@@ -23,4 +24,5 @@ urlpatterns = [
     path('disease/', DiseaseView.as_view()),
     path('stress/', StressView.as_view()),
     path('suggestion/', SuggestionView.as_view()),
+    path('newdata/', NewdataView.as_view()),
 ]
