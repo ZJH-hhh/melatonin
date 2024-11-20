@@ -11,6 +11,7 @@ from app.views.disease import DiseaseView
 from app.views.stress import StressView
 from app.views.suggestion import SuggestionView
 from app.views.newdata import NewdataView
+from app.views.upload import UploadView
 
 urlpatterns = [
     path('test/', TestView.as_view()),
@@ -25,4 +26,5 @@ urlpatterns = [
     path('stress/', StressView.as_view()),
     path('suggestion/', SuggestionView.as_view()),
     path('newdata/', NewdataView.as_view()),
+    path('upload/', UploadView.as_view()),
 ]
