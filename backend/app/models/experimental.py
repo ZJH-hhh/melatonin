@@ -22,6 +22,7 @@ class AnimalTest(models.Model):
     doi = models.CharField(db_column='DOI', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
+        managed = False
         db_table = 'animal_test'
 
 
@@ -40,4 +41,5 @@ class PlantTest(models.Model):
     doi = models.CharField(db_column='DOI', max_length=255, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
+        managed = False
         db_table = 'plant_test'

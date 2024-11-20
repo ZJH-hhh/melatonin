@@ -14,6 +14,7 @@ class Bacteria(models.Model):
     count = models.IntegerField(db_column='Count', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
+        managed = False
         db_table = 'bacteria'
 
 
@@ -23,6 +24,7 @@ class Fungi(models.Model):
     count = models.IntegerField(db_column='Count', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
+        managed = False
         db_table = 'fungi'
 
 
@@ -32,4 +34,5 @@ class Others(models.Model):
     count = models.IntegerField(db_column='Count', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
+        managed = False
         db_table = 'others'

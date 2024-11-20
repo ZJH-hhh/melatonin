@@ -32,24 +32,34 @@ class SearchView(APIView):
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
 
-            print(search_type1, search_type2)
+            print(value1)
 
             key1 = self.field_mapping.get(search_type1)
             key2 = self.field_mapping.get(search_type2)
 
             if method == 'and':
-                filter_criteria = {key1: value1, key2: value2}
+                value1, value2 = value1.strip(), value2.strip()
+                filter_criteria = {key1 + "__contains": value1, key2 + "__contains": value2}
                 data = Alldata.objects.filter(**filter_criteria)
+                data = data.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
             elif method == 'or':
-                filter_criteria = Q(**{key1: value1}) | Q(**{key2: value2})
+                value1, value2 = value1.strip(), value2.strip()
+                filter_criteria = Q(**{key1 + "__contains": value1}) | Q(**{key2 + "__contains": value2})
                 data = Alldata.objects.filter(filter_criteria)
+                data = data.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
             else:
-                filter_criteria = {key1: value1}
-                data = Alldata.objects.filter(**filter_criteria)
-            
-            data = data.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
-            paginator = Paginator(data, pagesize)
+                values = value1.split('\n')
+                data = []
+                for val in values:
+                    val = val.strip()
+                    if val:
+                        filter_criteria = {key1 + "__contains": val}
+                        item = Alldata.objects.filter(**filter_criteria)
+                        if item:
+                            item = item.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
+                            data.extend(item)
 
+            paginator = Paginator(data, pagesize)
             current_page = paginator.page(page)
             res = list(current_page.object_list)
 

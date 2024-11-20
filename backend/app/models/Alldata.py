@@ -48,4 +48,5 @@ class Alldata(models.Model):
     orthology = models.TextField(db_column='Orthology', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
+        managed = False
         db_table = 'alldata'

@@ -11,20 +11,20 @@ class SpeciesDetailView(APIView):
             pathway = request.GET.get('pathway')
             animal_growth = request.GET.get('animal_growth')
             plant_growth = request.GET.get('plant_growth')
-            stage = request.GET.get('stage')
+            disease = request.GET.get('disease')
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
 
             if tax_id:
                 queryset = Alldata.objects.filter(tax_id=tax_id)
             elif pathway:
-                queryset = Alldata.objects.filter(pathway=pathway)
+                queryset = Alldata.objects.filter(pathway__contains=pathway)
             elif animal_growth:
-                queryset = Alldata.objects.filter(animal_growth=animal_growth)
+                queryset = Alldata.objects.filter(animal_growth__contains=animal_growth)
             elif plant_growth:
-                queryset = Alldata.objects.filter(plant_growth=plant_growth)
-            elif stage:
-                queryset = Alldata.objects.filter(animal_growth=stage)
+                queryset = Alldata.objects.filter(plant_growth__contains=plant_growth)
+            elif disease:
+                queryset = Alldata.objects.filter(disease__contains=disease)
                 
             data = queryset.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
             

@@ -107,14 +107,14 @@ class GeneDetailView(APIView):
                             break
                                         
 
-            pathways = Alldata.objects.filter(database_id=database_id).values_list('kegg_pathway', flat=True).first()
-            if pathways:
-                pathways = pathways.split(',')
+            # pathways = Alldata.objects.filter(database_id=database_id).values_list('kegg_pathway', flat=True).first()
+            # if pathways:
+            #     pathways = pathways.split(',')
 
-            pathway_img = []
-            if pathways:
-                for item in pathways:
-                    pathway_img.append(url_headers + 'image/kegg_image/' + item + '.png')
+            # pathway_img = []
+            # if pathways:
+            #     for item in pathways:
+            #         pathway_img.append(url_headers + 'image/kegg_image/' + item + '.png')
 
             external_links = Alldata.objects.filter(database_id=database_id).values('kegg_id', 'kegg_pathway', 'ensembl_geneids', 'cellular_component', 'biological_process', 'molecular_function').first()
             if external_links:
@@ -132,7 +132,6 @@ class GeneDetailView(APIView):
                     'pdb_url': pdbs_file_url,
                     'orthology': orthology,
                     'gene_expression_data': gene_expression_data,
-                    'pathways': pathway_img,
                     'string_img': string_img,
                     'external_links': external_links,
                 }
