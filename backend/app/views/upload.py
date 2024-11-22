@@ -12,7 +12,7 @@ class UploadView(APIView):
 
     def post(self, request):
         try:
-            file = request.FILES['file']
+            file = request.FILES.get('file')
 
             fs = FileSystemStorage(location=os.path.join(self.file_headers, 'uploads'))
 

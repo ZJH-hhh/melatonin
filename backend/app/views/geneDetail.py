@@ -23,12 +23,15 @@ class GeneDetailView(APIView):
                 gene_detail['org_name'] = re.sub(r'\(.*?\)', '', gene_detail['org_name']).strip()
 
             protein_detail = Alldata.objects.filter(database_id=database_id).values('transcript_protein_name', 'uniprot_id', 'pdb', 'prosite', 'interpro', 'pfam_id',
-                                                                                                 'panther', 'cdd', 'protein_function').first()
+                                                                                                 'panther', 'cdd', 'protein_function', 'string').first()
             
             
-            string_val = Alldata.objects.filter(database_id=database_id).values_list('string', flat=True).first()
+            # string_val = Alldata.objects.filter(database_id=database_id).values_list('string', flat=True).first()
+            if protein_detail['string']:
+                protein_detail['string'] = protein_detail['string'].strip()
+
+            string_val = protein_detail['string']
             if string_val:
-                string_val = string_val.strip()
                 string_file_path = os.path.join(file_headers, 'image/string_image/', f'{string_val}.png')
             else:
                 string_file_path = ''
