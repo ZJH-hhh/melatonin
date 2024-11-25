@@ -78,7 +78,7 @@ class GeneDetailView(APIView):
                     file_path = os.path.join(file_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
                     if os.path.exists(file_path):
                         file_url = os.path.join(url_headers, 'structure&seq/structure/Alphafold_PDB/', f'{item}.pdb')
-                        alpha_pdb_file_urls.append(file_url)
+                        alpha_pdb_file_urls.append((item, file_url))
             
             pdbs = structure.get('pdb')
             if pdbs:
@@ -89,7 +89,7 @@ class GeneDetailView(APIView):
                     file_path = os.path.join(file_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
                     if os.path.exists(file_path):
                         file_url = os.path.join(url_headers, 'structure&seq/structure/PDB/', f'{item}.pdb')
-                        pdbs_file_url.append(file_url)
+                        pdbs_file_url.append((item, file_url))
 
 
             sequence = []

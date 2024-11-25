@@ -9,6 +9,7 @@ class SpeciesDetailView(APIView):
         try:
             tax_id = request.GET.get('tax_id')
             pathway = request.GET.get('pathway')
+            species_type = request.GET.get('species_type')
             animal_growth = request.GET.get('animal_growth')
             plant_growth = request.GET.get('plant_growth')
             disease = request.GET.get('disease')
@@ -17,14 +18,14 @@ class SpeciesDetailView(APIView):
 
             if tax_id:
                 queryset = Alldata.objects.filter(tax_id=tax_id)
-            elif pathway:
-                queryset = Alldata.objects.filter(pathway__contains=pathway)
             elif animal_growth:
                 queryset = Alldata.objects.filter(animal_growth__contains=animal_growth)
             elif plant_growth:
                 queryset = Alldata.objects.filter(plant_growth__contains=plant_growth)
             elif disease:
                 queryset = Alldata.objects.filter(disease__contains=disease)
+            elif pathway and type:
+                queryset = Alldata.objects.filter(pathway__contains=pathway, taxonomic_groups=species_type)
                 
             data = queryset.values('database_id', 'symbol', 'transcript_protein_name', 'org_name', 'tax_id', 'pathway', 'ncbi_gene_id', 'uniprot_id', 'source').order_by('database_id')
             
