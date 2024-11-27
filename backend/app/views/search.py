@@ -24,6 +24,7 @@ class SearchView(APIView):
     
     def get(self, request):
         try:
+            print(request.GET)
             search_type1 = request.GET.get('searchType1')
             value1 = request.GET.get('value1')
             search_type2 = request.GET.get('searchType2')
@@ -31,8 +32,6 @@ class SearchView(APIView):
             method = request.GET.get('method')
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
-
-            print(value1)
 
             key1 = self.field_mapping.get(search_type1)
             key2 = self.field_mapping.get(search_type2)

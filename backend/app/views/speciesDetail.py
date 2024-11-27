@@ -13,8 +13,11 @@ class SpeciesDetailView(APIView):
             animal_growth = request.GET.get('animal_growth')
             plant_growth = request.GET.get('plant_growth')
             disease = request.GET.get('disease')
+            stress = request.GET.get('stress')
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
+
+            print(stress)
 
             if tax_id:
                 queryset = Alldata.objects.filter(tax_id=tax_id)
@@ -24,6 +27,8 @@ class SpeciesDetailView(APIView):
                 queryset = Alldata.objects.filter(plant_growth__contains=plant_growth)
             elif disease:
                 queryset = Alldata.objects.filter(disease__contains=disease)
+            elif stress:
+                queryset = Alldata.objects.filter(stress__contains=stress)
             elif pathway and type:
                 queryset = Alldata.objects.filter(pathway__contains=pathway, taxonomic_groups=species_type)
                 

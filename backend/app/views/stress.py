@@ -25,7 +25,7 @@ class StressView(APIView):
             for file_name in os.listdir(Biotic_path):
                 file_path = os.path.join(self.url_headers, 'image/stress/Biotic/', file_name)
                 name, _ = os.path.splitext(file_name)
-                Abiotic.append((name, file_path))
+                Biotic.append((name, file_path))
 
             return Response({
                 'result': 'success',
