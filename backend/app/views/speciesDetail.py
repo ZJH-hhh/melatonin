@@ -17,8 +17,6 @@ class SpeciesDetailView(APIView):
             pagesize = request.GET.get('pageSize', 10)
             page = request.GET.get('page', 1)
 
-            print(stress)
-
             if tax_id:
                 queryset = Alldata.objects.filter(tax_id=tax_id)
             elif animal_growth:
