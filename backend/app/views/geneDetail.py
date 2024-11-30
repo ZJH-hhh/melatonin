@@ -103,7 +103,7 @@ class GeneDetailView(APIView):
 
             protein_seg_path = os.path.join(file_headers, 'structure&seq/sequence/protein_sequence_all.fasta')
             if os.path.exists(protein_seg_path):
-                with open(gene_seq_path, 'r', encoding='utf-8') as f:
+                with open(protein_seg_path, 'r', encoding='utf-8') as f:
                     for line in f:
                         if line.startswith('>') and gene_id == line[1:].strip():
                             sequence.append({'protein_seg_path': next(f).strip()})
